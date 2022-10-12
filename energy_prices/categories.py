@@ -1,6 +1,7 @@
 from collections import Counter
 from decimal import Decimal
 from enum import Enum
+from typing import Union
 
 from icecream import ic
 
@@ -16,7 +17,7 @@ class PriceCategories(Enum):
     EXPENSIVE = 4
 
     @staticmethod
-    def categorize(price: float | Decimal) -> "PriceCategories":
+    def categorize(price: Union[float, Decimal]) -> "PriceCategories":
         if price <= THRESHOLD_EXTREMELY_CHEAP:
             return PriceCategories.EXTREMELY_CHEAP
         if price <= THRESHOLD_CHEAP:

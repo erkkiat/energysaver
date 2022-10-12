@@ -1,5 +1,6 @@
 import datetime
 from decimal import Decimal
+from typing import Union
 
 from dateutil import parser as date_parser
 import requests
@@ -14,7 +15,7 @@ hour_in_seconds = 60 * 60
 
 
 @filecache(8 * hour_in_seconds)
-def get_hourly_prices(date: datetime.date | str) -> dict:
+def get_hourly_prices(date: Union[datetime.date, str]) -> dict:
     if isinstance(date, datetime.date):
         date = date.isoformat()
     print(f'Fetching prices from Vattenfallen for {date}')
