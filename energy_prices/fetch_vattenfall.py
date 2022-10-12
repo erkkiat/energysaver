@@ -14,7 +14,7 @@ from energy_prices.models import Price
 hour_in_seconds = 60 * 60
 
 
-@filecache(8 * hour_in_seconds)
+# @filecache(8 * hour_in_seconds)
 def get_hourly_prices(date: Union[datetime.date, str]) -> dict:
     if isinstance(date, datetime.date):
         date = date.isoformat()
@@ -24,7 +24,7 @@ def get_hourly_prices(date: Union[datetime.date, str]) -> dict:
     result = requests.get(url)
     return result.json()
 
-# @filecache(1 * hour_in_seconds)
+@filecache(8 * hour_in_seconds)
 def update_hourly_prices(date=datetime.date.today()) -> dict:
     print(f'Updating prices from Vattenfallen on {date}')
     prices = get_hourly_prices(date)
