@@ -12,9 +12,9 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 import os
 from pathlib import Path
 
-DRIVER = 'energy_prices.drivers.base.Device'
+DRIVER = os.environ.get('DRIVER', 'energy_prices.drivers.base.Device')
 # DRIVER = 'energy_prices.drivers.nibe.NibeF1226'
-HARDWARE_PORT_NUMBER = 40
+HARDWARE_PORT_NUMBER = int(os.environ.get('HARDWARE_PORT_NUMBER', 40))
 
 SLACK_WEBHOOK_URL = os.environ.get('SLACK_WEBHOOK_URL')
 
@@ -31,7 +31,7 @@ SECRET_KEY = 'django-fdahrewj3o43wbfabjhvnxzzzu9a*8=a_(@^6pe=n$@u-reezg43%nxki+-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "192.168.*"]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "*"]
 
 
 # Application definition
