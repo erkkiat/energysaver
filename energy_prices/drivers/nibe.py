@@ -18,6 +18,7 @@ class NibeF1226(Device):
         """
         The pins we are connecting to on the Nibe F1226 need to be set to "external control" or "ulkoinen säätö"
         """
-        super().set_price_category(category)
+        # super().set_price_category(category)
         cheap_electricity = bool(category in (PriceCategories.EXTREMELY_CHEAP, PriceCategories.CHEAP))
+        print(f'Setting Rasberry Pi output {self.output_number} to {cheap_electricity}')
         return GPIO.output(self.output_number, cheap_electricity)
