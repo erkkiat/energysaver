@@ -10,6 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
+DRIVER = 'energy_prices.drivers.base.Device'
+# DRIVER = 'energy_prices.drivers.nibe.NibeF1226'
+HARDWARE_PORT_NUMBER = 40
+
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -108,7 +112,7 @@ LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'EET'
 USE_I18N = False
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
