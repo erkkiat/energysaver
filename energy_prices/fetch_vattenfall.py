@@ -7,6 +7,7 @@ import requests
 
 from django.utils import timezone
 from filecache import filecache
+from icecream import ic
 
 from energy_prices.categories import PriceCategories, calculate_categories
 from energy_prices.models import Price
@@ -44,9 +45,11 @@ def update_hourly_prices(date=datetime.date.today()) -> dict:
     return result
 
 
-def get_current_price(dt: datetime = timezone.now()) -> (PriceCategories, Decimal):
+def get_current_price(dt: datetime = None) -> (PriceCategories, Decimal):
+    if not dt:
+        dt = timezone.now()
     previous_even_hour = timezone.datetime(dt.year, dt.month, dt.day, dt.hour, 0)
     prices = update_hourly_prices()
     price_now, category = prices[previous_even_hour]
-    # ic(prices, previous_even_hour, price_now, category)
+    ic(prices, previous_even_hour, price_now, category)
     return (category, price_now)
