@@ -3,11 +3,12 @@ import os
 from energy_prices.categories import PriceCategories
 from energy_prices.drivers.base import Device
 import RPi.GPIO as GPIO
-from grove.factory import Factory
 
 from energy_prices.message import message
 
 USE_GROVE = bool(os.environ.get('USE_GROVE', False))
+if USE_GROVE:
+    from grove.factory import Factory
 
 
 class NibeF1226(Device):
