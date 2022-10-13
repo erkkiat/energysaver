@@ -34,8 +34,8 @@ def calculate_categories(prices: dict) -> Counter:
     counter = Counter(categories)
     # ic(counter)
     expensive_hours = counter.get(PriceCategories.EXPENSIVE)
-    # ic(expensive_hours)
-    if MINIMUM_HEATING_HOURS > 24 - expensive_hours:
+    ic(expensive_hours)
+    if expensive_hours and MINIMUM_HEATING_HOURS > 24 - expensive_hours:
         print(f'More heating hours are needed, {MINIMUM_HEATING_HOURS} > {24 - expensive_hours}')
         hours_tuple = [[date, price, category] for date, (price, category) in prices.items()]
         hours_sorted_by_price = sorted(hours_tuple, key=lambda x: x[1])
