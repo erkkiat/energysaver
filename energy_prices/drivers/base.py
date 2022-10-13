@@ -5,8 +5,8 @@ class Device:
     vendor = 'Simulator'
     model = 'Hal'
 
-    def __init__(self, output_number: int):
-        print(f'Setting port number to {output_number}')
+    def __init__(self, port_number: int):
+        print(f'Setting port number to {port_number}')
 
     def set_price_category(self, category: PriceCategories) -> bool:
         print(f'Simulating the setting of price category {category}.')
