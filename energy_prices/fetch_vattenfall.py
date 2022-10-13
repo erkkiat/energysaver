@@ -41,8 +41,7 @@ def update_hourly_prices(date=datetime.date.today()) -> dict:
         category = PriceCategories.categorize(price.price)
         result[price.start_time] = (round(Decimal(price.price), 3), category)
     # ic(result)
-    calculate_categories(result)
-    return result
+    return calculate_categories(result)
 
 
 def get_current_price(dt: datetime = None) -> (PriceCategories, Decimal):
@@ -50,6 +49,7 @@ def get_current_price(dt: datetime = None) -> (PriceCategories, Decimal):
         dt = timezone.now()
     previous_even_hour = timezone.datetime(dt.year, dt.month, dt.day, dt.hour, 0)
     prices = update_hourly_prices()
+    ic(prices)
     price_now, category = prices[previous_even_hour]
-    ic(prices, previous_even_hour, price_now, category)
+    ic(previous_even_hour, price_now, category)
     return (category, price_now)
