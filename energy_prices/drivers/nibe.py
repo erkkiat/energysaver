@@ -4,7 +4,7 @@ from energy_prices.categories import PriceCategories
 from energy_prices.drivers.base import Device
 import RPi.GPIO as GPIO
 
-from energy_prices.message import message
+from energy_prices.message import messages
 
 USE_GROVE = bool(os.environ.get('USE_GROVE', False))
 if USE_GROVE:
@@ -31,7 +31,7 @@ class NibeF1226(Device):
         The pins we are connecting to on the Nibe F1226 need to be set to "external control" or "ulkoinen säätö"
         """
         cheap_electricity = bool(category in (PriceCategories.EXTREMELY_CHEAP, PriceCategories.CHEAP))
-        message(f'Setting Rasberry Pi relay to {cheap_electricity}')
+        messages.message(f'Setting Rasberry Pi relay to {cheap_electricity}')
         if USE_GROVE:
             self.relay1.on() if cheap_electricity else self.relay1.off()
         else:

@@ -7,7 +7,7 @@ from typing import Union
 
 from icecream import ic
 
-from energy_prices.message import message
+from energy_prices.message import messages
 
 THRESHOLD_EXTREMELY_CHEAP = round(Decimal(os.environ.get('THRESHOLD_EXTREMELY_CHEAP',0.02)), 3)
 THRESHOLD_CHEAP = round(Decimal(os.environ.get('THRESHOLD_CHEAP',0.06)), 3)
@@ -38,7 +38,7 @@ def fill_out_default_categories(date: datetime.date, prices: dict) -> dict:
     if len(prices) == 24:
         return prices
 
-    message(f'There is a problem fetching price data for date {date}, reverting to default scheme')
+    messages.message(f'There is a problem fetching price data for date {date}, reverting to default scheme')
 
     year = date.year
     month = date.month
@@ -51,7 +51,7 @@ def fill_out_default_categories(date: datetime.date, prices: dict) -> dict:
         category = PriceCategories.CHEAP if cheap_hour(hour) else PriceCategories.EXPENSIVE
         price = 0 if cheap_hour(hour) else 9999
         prices[datetime.datetime(year, month, day, hour, 0)] = (Decimal(price), category)
-    ic(prices)
+    # ic(prices)
     return prices
 
 
