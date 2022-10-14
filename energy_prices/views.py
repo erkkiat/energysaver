@@ -13,9 +13,13 @@ driver: Device = Driver(settings.HARDWARE_PORT_NUMBER)
 
 
 def fetch_prices(_request):
-    category, price = get_current_price()
-    msg = f'{price:.2f} €/kWh, {category.name}'
-    messages.message(msg)
-    driver.set_price_category(category)
-    messages.flush()
-    return HttpResponse('')
+    try:
+        category, price = get_current_price()
+        msg = f'{price:.2f} €/kWh, {category.name}'
+        messages.message(msg)
+        driver.set_price_category(category)
+        messages.flush()
+        return HttpResponse('')
+    except Exception as e:
+        messages.message(f'Error fetching prices or adjusting heating: {e}', immediate=True)
+        return HttpResponse(f'Error fetching prices or adjusting heating: {e}')
