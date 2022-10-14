@@ -26,7 +26,8 @@ def get_hourly_prices(date: Union[datetime.date, str]) -> dict:
     return result.json()
 
 # @filecache(8 * hour_in_seconds)
-def update_hourly_prices(date=datetime.date.today()) -> dict:
+def update_hourly_prices(date: datetime.datetime = None) -> dict:
+    date = date or datetime.date.today()  # If not specified as parameter
     print(f'Updating prices from Vattenfallen on {date}')
     prices = get_hourly_prices(date)
     # ic(prices)
