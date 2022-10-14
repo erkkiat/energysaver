@@ -1,9 +1,12 @@
+import datetime
 from collections import Counter
 from decimal import Decimal
 from enum import Enum
 from typing import Union
 
 from icecream import ic
+
+from energy_prices.message import message
 
 THRESHOLD_EXTREMELY_CHEAP = 0.02
 THRESHOLD_CHEAP = 0.06
@@ -29,7 +32,29 @@ class PriceCategories(Enum):
         return PriceCategories.NORMAL
 
 
-def calculate_categories(prices: dict) -> Counter:
+def fill_out_default_categories(date: datetime.date, prices: dict) -> dict:
+    # If price data is not available, fill out a cheap night and an expensive day
+    if len(prices) == 24:
+        return prices
+
+    message(f'There is a problem fetching price data for date {date}, reverting to default scheme')
+
+    year = date.year
+    month = date.month
+    day = date.day
+
+    def cheap_hour(hour: int) -> bool:
+        return 1 <= hour <= 6
+
+    for hour in range(0,23):
+        category = PriceCategories.CHEAP if cheap_hour(hour) else PriceCategories.EXPENSIVE
+        price = 0 if cheap_hour(hour) else 9999
+        prices[datetime.datetime(year, month, day, hour, 0)] = (Decimal(price), category)
+    ic(prices)
+    return prices
+
+
+def calculate_categories(date: datetime.date, prices: dict) -> dict:
     categories = [value[1] for key, value in prices.items()]
     counter = Counter(categories)
     # ic(counter)
@@ -47,4 +72,6 @@ def calculate_categories(prices: dict) -> Counter:
         # ic(hours_sorted_by_time, hours_sorted_by_price)
         prices = dict((date, (price, category)) for date, price, category in hours_sorted_by_time)
         # ic(prices)
+    if len(prices) < 24:
+        return fill_out_default_categories(date, prices)
     return prices

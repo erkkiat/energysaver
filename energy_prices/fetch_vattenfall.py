@@ -46,7 +46,7 @@ def update_hourly_prices(date: datetime.datetime = None) -> dict:
         category = PriceCategories.categorize(price.price)
         result[price.start_time] = (round(Decimal(price.price), 3), category)
     # ic(result)
-    return calculate_categories(result)
+    return calculate_categories(date, result)
 
 
 def get_current_price(dt: datetime = None) -> (PriceCategories, Decimal):
