@@ -10,6 +10,8 @@ USE_GROVE = bool(os.environ.get('USE_GROVE', False))
 if USE_GROVE:
     from grove.factory import Factory
 
+AUX_MODE = os.environ.get('AUX_MODE', 'increased heating')  # A name for the function you have configured on Nibe
+
 
 class NibeF1226(Device):
     vendor = 'Nibe'
@@ -31,7 +33,7 @@ class NibeF1226(Device):
         The pins we are connecting to on the Nibe F1226 need to be set to "external control" or "ulkoinen säätö"
         """
         cheap_electricity = bool(category in (PriceCategories.EXTREMELY_CHEAP, PriceCategories.CHEAP))
-        messages.message(f'Setting Rasberry Pi relay to {cheap_electricity}')
+        messages.message(f'Setting {AUX_MODE} to {cheap_electricity}')
         if USE_GROVE:
             self.relay1.on() if cheap_electricity else self.relay1.off()
         else:
