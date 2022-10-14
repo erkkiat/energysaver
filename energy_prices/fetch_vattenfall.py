@@ -20,19 +20,20 @@ hour_in_seconds = 60 * 60
 def get_hourly_prices(date: Union[datetime.date, str]) -> dict:
     if isinstance(date, datetime.date):
         date = date.isoformat()
-    print(f'Fetching prices from Vattenfallen for {date}')
+    messages.message(f'Fetching prices from Vattenfallen for {date}')
     url = f'https://www.vattenfall.fi/api/price/spot/{date}/{date}?lang=fi'
     # ic(date, url)
     result = requests.get(url)
     data = result.json()
-    if result.status_code >= 400 or len(data) < 300:
-        messages.message('There seems to be a connection issue with Vattenfallen')
+    if result.status_code >= 400 or len(data) < 24:
+        messages.message(f'There seems to be a connection issue with Vattenfallen: '
+                         f'status code {result.status_code}, {len(data)} hourly entries')
     return result.json()
 
 # @filecache(8 * hour_in_seconds)
 def update_hourly_prices(date: datetime.datetime = None) -> dict:
     date = date or datetime.date.today()  # If not specified as parameter
-    print(f'Updating prices from Vattenfallen on {date}')
+    messages.message(f'Updating prices from Vattenfallen on {date}')
     prices = get_hourly_prices(date)
     # ic(prices)
     result = dict()
@@ -54,7 +55,12 @@ def get_current_price(dt: datetime = None) -> (PriceCategories, Decimal):
         dt = timezone.now()
     previous_even_hour = timezone.datetime(dt.year, dt.month, dt.day, dt.hour, 0)
     prices = update_hourly_prices()
-    ic(prices)
+    # ic(prices)
+    p = [
+        (date.hour, f'{round(price, 2)} €/kWh', category.name)
+        for date, (price, category) in prices.items()
+    ]
+    ic(p)
     price_now, category = prices[previous_even_hour]
-    ic(previous_even_hour, price_now, category)
+    # ic(previous_even_hour, price_now, category)
     return (category, price_now)

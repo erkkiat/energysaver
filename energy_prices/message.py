@@ -7,6 +7,7 @@ class MessageQueue:
 
     def message(self, s: str, immediate=None):
         self.queue.append(s)
+        print(s)
         if immediate:
             self.flush()
 
