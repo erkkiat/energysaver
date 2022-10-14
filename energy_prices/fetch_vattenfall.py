@@ -10,6 +10,7 @@ from filecache import filecache
 from icecream import ic
 
 from energy_prices.categories import PriceCategories, calculate_categories
+from energy_prices.message import message
 from energy_prices.models import Price
 
 hour_in_seconds = 60 * 60
@@ -23,6 +24,9 @@ def get_hourly_prices(date: Union[datetime.date, str]) -> dict:
     url = f'https://www.vattenfall.fi/api/price/spot/{date}/{date}?lang=fi'
     # ic(date, url)
     result = requests.get(url)
+    data = result.json()
+    if result.status_code >= 400 or len(data) < 300:
+        message('There seems to be a connection issue with Vattenfallen')
     return result.json()
 
 # @filecache(8 * hour_in_seconds)
