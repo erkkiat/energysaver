@@ -67,7 +67,7 @@ def calculate_categories(date: datetime.date, prices: dict) -> dict:
         hours_sorted_by_price = sorted(hours_tuple, key=lambda x: x[1])
         for i in range(0, MINIMUM_HEATING_HOURS):
             date, price, category = hours_sorted_by_price[i]
-            if category == PriceCategories.EXPENSIVE:
+            if category in (PriceCategories.EXPENSIVE, PriceCategories.NORMAL):
                 hours_sorted_by_price[i][2] = PriceCategories.FORCED
         hours_sorted_by_time = sorted(hours_sorted_by_price, key=lambda x: x[0])
         # ic(hours_sorted_by_time, hours_sorted_by_price)
