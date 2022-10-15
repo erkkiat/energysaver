@@ -32,9 +32,11 @@ class NibeF1226(Device):
         """
         The pins we are connecting to on the Nibe F1226 need to be set to "external control" or "ulkoinen säätö"
         """
-        cheap_electricity = bool(category in (PriceCategories.EXTREMELY_CHEAP, PriceCategories.CHEAP))
-        messages.message(f'Setting {AUX_MODE} to {cheap_electricity}')
+        extra_heating = bool(category in
+                             (PriceCategories.EXTREMELY_CHEAP, PriceCategories.CHEAP, PriceCategories.FORCED)
+                             )
+        messages.message(f'Setting {AUX_MODE} to {extra_heating}')
         if USE_GROVE:
-            self.relay1.on() if cheap_electricity else self.relay1.off()
+            self.relay1.on() if extra_heating else self.relay1.off()
         else:
-            GPIO.output(self.port_number, cheap_electricity)
+            GPIO.output(self.port_number, extra_heating)

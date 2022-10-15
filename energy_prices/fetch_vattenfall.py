@@ -31,7 +31,7 @@ def get_hourly_prices(date: Union[datetime.date, str]) -> dict:
     return result.json()
 
 # @filecache(8 * hour_in_seconds)
-def update_hourly_prices(date: datetime.datetime = None) -> dict:
+def update_hourly_prices(date: datetime.date = None) -> dict:
     date = date or datetime.date.today()  # If not specified as parameter
     messages.message(f'Updating prices from Vattenfallen on {date}')
     prices = get_hourly_prices(date)
@@ -50,11 +50,11 @@ def update_hourly_prices(date: datetime.datetime = None) -> dict:
     return calculate_categories(date, result)
 
 
-def get_current_price(dt: datetime = None) -> (PriceCategories, Decimal):
+def get_current_price(dt: datetime.datetime = None) -> (PriceCategories, Decimal):
     if not dt:
         dt = timezone.now()
     previous_even_hour = timezone.datetime(dt.year, dt.month, dt.day, dt.hour, 0)
-    prices = update_hourly_prices()
+    prices = update_hourly_prices(dt.date())
     # ic(prices)
     p = [
         (date.hour, f'{round(price, 2)} €/kWh', category.name)
