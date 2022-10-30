@@ -1,4 +1,5 @@
 import os
+from enum import Enum
 
 from energy_prices.categories import PriceCategories
 from energy_prices.drivers.base import Device
@@ -10,7 +11,19 @@ USE_GROVE = bool(os.environ.get('USE_GROVE', False))
 if USE_GROVE:
     from grove.factory import Factory
 
-AUX_MODE = os.environ.get('AUX_MODE', 'increased heating')  # A name for the function you have configured on Nibe
+
+class AuxModes(Enum):
+    TARIFF_BLOCKING = 'TA', 'The additional heat, the compressor, the heating and hot water are blocked'
+    TEMPORARY_LUX = 'LU', 'The water heater is set to the high temperature setting'
+    EXTERNAL_ADJUSTMENT = 'EX', 'Increase the supply temperature and the room temperature'
+
+
+AUX_MODE = os.environ.get('AUX_MODE')
+options = [x.name for x in AuxModes]
+if AUX_MODE not in options:
+    msg = f'Please set the AUX_MODE to one of {", ".join(options)} for the Nibe F1226'
+    messages.message(msg)
+    raise ValueError(msg)
 
 
 class NibeF1226(Device):
@@ -29,13 +42,13 @@ class NibeF1226(Device):
         super().__init__(port_number)
 
     def set_price_category(self, category: PriceCategories):
-        """
-        The pins we are connecting to on the Nibe F1226 need to be set to "external control" or "ulkoinen säätö"
-        """
-        extra_heating = bool(category in
-                             (PriceCategories.EXTREMELY_CHEAP, PriceCategories.CHEAP, PriceCategories.FORCED)
-                             )
-        messages.message(f'Setting {AUX_MODE} to {extra_heating}')
+        output = bool(category in dict(
+            EXTERNAL_ADJUSTMENT=(PriceCategories.EXTREMELY_CHEAP, PriceCategories.CHEAP, PriceCategories.FORCED),
+            TEMPORARY_LUX=(PriceCategories.EXTREMELY_CHEAP, PriceCategories.CHEAP, PriceCategories.FORCED),
+            TARIFF_BLOCKING=(PriceCategories.EXPENSIVE,),
+        )[AUX_MODE])
+
+        messages.message(f'Setting {AUX_MODE} to {"ON" if output else "off"}')
         if USE_GROVE:
             self.relay1.on() if extra_heating else self.relay1.off()
         else:

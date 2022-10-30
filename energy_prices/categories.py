@@ -12,7 +12,7 @@ from energy_prices.message import messages
 THRESHOLD_EXTREMELY_CHEAP = round(Decimal(os.environ.get('THRESHOLD_EXTREMELY_CHEAP',0.02)), 3)
 THRESHOLD_CHEAP = round(Decimal(os.environ.get('THRESHOLD_CHEAP',0.06)), 3)
 THRESHOLD_EXPENSIVE = round(Decimal(os.environ.get('THRESHOLD_EXPENSIVE', 0.14)), 3)
-MINIMUM_HEATING_HOURS = int(os.environ.get('MINIMUM_HEATING_HOURS', 6))
+MINIMUM_HEATING_HOURS = int(os.environ.get('MINIMUM_HEATING_HOURS', 8))
 
 
 class PriceCategories(Enum):

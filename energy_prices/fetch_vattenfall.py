@@ -30,7 +30,7 @@ def get_hourly_prices(date: Union[datetime.date, str]) -> dict:
                          f'status code {result.status_code}, {len(data)} hourly entries')
     return result.json()
 
-# @filecache(8 * hour_in_seconds)
+@filecache(4 * hour_in_seconds)
 def update_hourly_prices(date: datetime.date = None) -> dict:
     date = date or datetime.date.today()  # If not specified as parameter
     messages.message(f'Updating prices from Vattenfallen on {date}')
