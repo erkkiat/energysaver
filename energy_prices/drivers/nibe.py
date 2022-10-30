@@ -50,6 +50,6 @@ class NibeF1226(Device):
 
         messages.message(f'Setting {AUX_MODE} to {"ON" if output else "off"}')
         if USE_GROVE:
-            self.relay1.on() if extra_heating else self.relay1.off()
+            self.relay1.on() if output else self.relay1.off()
         else:
-            GPIO.output(self.port_number, extra_heating)
+            GPIO.output(self.port_number, output)
