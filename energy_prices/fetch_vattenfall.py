@@ -2,6 +2,7 @@ import datetime
 from decimal import Decimal
 from typing import Union
 
+from cachetools.func import ttl_cache
 from dateutil import parser as date_parser
 import requests
 
@@ -16,7 +17,7 @@ from energy_prices.models import Price
 hour_in_seconds = 60 * 60
 
 
-@filecache(8 * hour_in_seconds)
+@ttl_cache(ttl=8 * hour_in_seconds)
 def get_hourly_prices(date: Union[datetime.date, str]) -> dict:
     if isinstance(date, datetime.date):
         date = date.isoformat()
@@ -30,7 +31,7 @@ def get_hourly_prices(date: Union[datetime.date, str]) -> dict:
                          f'status code {result.status_code}, {len(data)} hourly entries')
     return result.json()
 
-@filecache(4 * hour_in_seconds)
+# @filecache(4 * hour_in_seconds)
 def update_hourly_prices(date: datetime.date = None) -> dict:
     date = date or datetime.date.today()  # If not specified as parameter
     messages.message(f'Updating prices from Vattenfallen on {date}')
@@ -51,16 +52,21 @@ def update_hourly_prices(date: datetime.date = None) -> dict:
 
 
 def get_current_price(dt: datetime.datetime = None) -> (PriceCategories, Decimal):
-    if not dt:
-        dt = timezone.now()
-    previous_even_hour = timezone.datetime(dt.year, dt.month, dt.day, dt.hour, 0)
-    prices = update_hourly_prices(dt.date())
-    # ic(prices)
-    p = [
-        (date.hour, f'{round(price, 2)} €/kWh', category.name)
-        for date, (price, category) in prices.items()
-    ]
-    ic(p)
-    price_now, category = prices[previous_even_hour]
-    # ic(previous_even_hour, price_now, category)
-    return (category, price_now)
+    try:
+        if not dt:
+            dt = timezone.now()
+        previous_even_hour = timezone.datetime(dt.year, dt.month, dt.day, dt.hour, 0)
+        prices = update_hourly_prices(dt.date())
+        # ic(prices)
+        p = [
+            (date.hour, f'{round(price, 2)} €/kWh', category.name)
+            for date, (price, category) in prices.items()
+        ]
+        ic(p)
+        price_now, category = prices[previous_even_hour]
+        # ic(previous_even_hour, price_now, category)
+        return (category, price_now)
+    except Exception as e:
+        messages.message(f'Cannot fetch prices currently, retrying in 1 hour: {e}')
+        get_hourly_prices.cache_clear()
+        return (PriceCategories.CHEAP, 0.0) if dt.hour < 7 else (PriceCategories.EXPENSIVE, 9999)
